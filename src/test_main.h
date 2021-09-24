@@ -19,3 +19,5 @@ std::istringstream MakeProcessInput(const std::string& serialized_db_filename, c
 
 void TestMain();
 
+void TestFilters();
+

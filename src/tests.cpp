@@ -55,8 +55,8 @@ void TestAll() {
   RUN_TEST(tr, TestCompanyToOstream);
 
   RUN_TEST(tr, TestDatabaseToOstream);
+  RUN_TEST(tr, TestFilters);
   RUN_TEST(tr, TestMain);
-  RUN_TEST(tr, DoesPhoneMatch2);
 
 }
 

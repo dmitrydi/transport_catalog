@@ -17,22 +17,4 @@
 #include "test_ostreams.h"
 #include "test_main.h"
 
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Phone& phone);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Address& addr);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Name& name);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Url& url);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::WorkingTime& wt);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::NearbyStop& ns);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Rubric& rubric);
-//
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Company& company);
-//
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Database& db);
-//
-//std::ostream& operator<<(std::ostream& os, const Filters::Phone& phone);
-
-void TestTCSaveLoad();
-
-void TestIn1();
-
 void TestAll();
