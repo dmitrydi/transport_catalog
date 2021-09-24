@@ -1,0 +1,46 @@
+{
+    "names": [
+        {
+            "value": "Дендрарий"
+        }
+    ],
+    "urls": [
+        {
+            "value": "http://dendrarium.ru"
+        }
+    ],
+    "rubrics": [
+        1
+    ],
+    "address": {
+        "coords": {
+            "lat": "43.573226",
+            "lon": "39.742947"
+        }
+    },
+    "nearby_stops": [
+        {
+            "name": "Цирк",
+            "meters": 180
+        }
+    ],
+    "phones": [
+        {
+            "type": "PHONE",
+            "country_code": "7",
+            "local_code": "862",
+            "number": "2671646"
+        },
+        {
+            "type": "FAX",
+            "country_code": "7",
+            "local_code": "862",
+            "number": "2671842"
+        }
+        {
+            "country_code": "7",
+            "local_code": "862",
+            "number": "333333"
+        }
+    ]
+}
