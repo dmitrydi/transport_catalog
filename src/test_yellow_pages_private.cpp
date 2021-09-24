@@ -204,6 +204,60 @@ void MapToRubric() {
 
     }
   }
+  void DoesPhoneMatch2() {
+    { // #1
+      istringstream iss(R"({"country_code": "ehBymMPIfyUDvKD4Y", "extension": "Z6cN k8nDjc8rwwG"})");
+      const auto input_doc = Json::Load(iss);
+      const auto& input_map = input_doc.GetRoot().AsMap();
+      Descriptions::Phone phone = Descriptions::Phone::ParseFrom(input_map);
+      Filters::Phone filter = Filters::Phone::ParseFrom(input_map);
+      {
+        ASSERT(YellowPagesPrivate::DoesPhoneMatch(phone, filter));
+      }
+      {
+        Descriptions::Phone test_phone{
+          .type = Descriptions::Phone::Type::PHONE,
+          .country_code="ehBymMPIfyUDvKD4Y",
+          .extension="Z6cN k8nDjc8rwwG"
+        };
+        ASSERT(YellowPagesPrivate::DoesPhoneMatch(test_phone, filter));
+      }
+      {
+        Descriptions::Phone test_phone{
+          .type = Descriptions::Phone::Type::FAX,
+          .country_code="ehBymMPIfyUDvKD4Y",
+          .extension="Z6cN k8nDjc8rwwG"
+        };
+        ASSERT(YellowPagesPrivate::DoesPhoneMatch(test_phone, filter));
+      }
+      {
+        Descriptions::Phone test_phone{
+          .country_code="ehBymMPIfyUDvKD4Y",
+          .local_code = "any",
+          .extension="Z6cN k8nDjc8rwwG"
+        };
+        ASSERT(!YellowPagesPrivate::DoesPhoneMatch(test_phone, filter));
+      }
+    }
+    {
+      istringstream iss(R"({"type": "PHONE"})");
+      const auto input_doc = Json::Load(iss);
+      const auto& input_map = input_doc.GetRoot().AsMap();
+      Descriptions::Phone phone = Descriptions::Phone::ParseFrom(input_map);
+      Filters::Phone filter = Filters::Phone::ParseFrom(input_map);
+      {
+        ASSERT(YellowPagesPrivate::DoesPhoneMatch(phone, filter));
+      }
+      {
+        Descriptions::Phone test_phone{
+          .type = Descriptions::Phone::Type::PHONE,
+          .country_code="ehBymMPIfyUDvKD4Y",
+          .extension="Z6cN k8nDjc8rwwG"
+        };
+        ASSERT(YellowPagesPrivate::DoesPhoneMatch(test_phone, filter));
+      }
+    }
+  }
 
   void DoesPhoneMatch() {
     /*

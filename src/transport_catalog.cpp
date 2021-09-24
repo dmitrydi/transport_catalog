@@ -176,8 +176,6 @@ TransportCatalog TransportCatalog::Deserialize(const string& data) {
   return catalog;
 }
 
-
-
 std::vector<std::string> TransportCatalog::FindCompanies(const Filters::Filter& filter) const {
   vector<string> result;
   for (const auto& company: database.companies) {
