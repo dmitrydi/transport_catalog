@@ -38,8 +38,13 @@ public:
       std::string stop_name;
       double time;
     };
+    struct WalkItem {
+      std::string stop_from;
+      std::string company_name;
+      double time;
+    };
 
-    using Item = std::variant<BusItem, WaitItem>;
+    using Item = std::variant<BusItem, WaitItem, WalkItem>;
     std::vector<Item> items;
   };
 
@@ -51,6 +56,7 @@ private:
   struct RoutingSettings {
     int bus_wait_time;  // in minutes
     double bus_velocity;  // km/h
+    double pedestrian_velocity;
   };
 
   static RoutingSettings MakeRoutingSettings(const Json::Dict& json);
@@ -74,7 +80,10 @@ private:
     size_t finish_stop_idx;
   };
   struct WaitEdgeInfo {};
-  using EdgeInfo = std::variant<BusEdgeInfo, WaitEdgeInfo>;
+  struct BlankEdgeInfo{}; // for company stop
+  struct WalkEdgeInfo{};
+
+  using EdgeInfo = std::variant<BusEdgeInfo, WaitEdgeInfo, BlankEdgeInfo, WalkEdgeInfo>;
 
   RoutingSettings routing_settings_;
   BusGraph graph_;

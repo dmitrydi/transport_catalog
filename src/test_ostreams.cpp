@@ -155,6 +155,46 @@ void TestCompanyToOstream() {
   }
 }
 
+void TestCompanyToShort() {
+  const int total_companies = 1000;
+  const int expected_pass_companies = 367;
+  const int names_filter_size = 10;
+  const int urls_filter_size = 10;
+  const int rubrics_filter_size = 10;
+  const int phones_filter_size = 10;
+  const int max_names = 20;
+  const int max_urls = 20;
+  const int max_phones = 20;
+  const int max_rubrics = 20;
+  auto dataset = GenerateTestDataset(
+      total_companies,
+      expected_pass_companies,
+      names_filter_size,
+      urls_filter_size,
+      rubrics_filter_size,
+      phones_filter_size,
+      max_names,
+      max_urls,
+      max_phones,
+      max_rubrics
+      );
+  ostringstream oss;
+  for (const auto& cp: dataset.database.companies) {
+    //cp.ToOstreamShort(cerr);
+    cp.ToOstreamShort(oss);
+  }
+  vector<Company> from_iss;
+  from_iss.reserve(total_companies);
+  istringstream iss(oss.str());
+  string dum;
+  while(getline(iss, dum, ';')) {
+    istringstream _iss_(dum);
+    from_iss.push_back(Company::FromIstreamShort(_iss_));
+  }
+  for (int i = 0; i < total_companies; ++i)
+    ASSERT(dataset.database.companies[i]==from_iss[i]);
+}
+
 void TestDatabaseToOstream() {
   istringstream iss(R"({
         "rubrics": {

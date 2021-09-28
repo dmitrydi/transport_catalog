@@ -18,20 +18,6 @@ TransportCatalog::TransportCatalog(
     const Json::Dict& render_settings_json,
     Descriptions::Database db
 ): YellowPagesPrivate(move(db)) {
-//  database = move(db);
-//
-//  mapToRubric = MakeRubricMap(database);
-  //lcvQmn7MpJH3sA 7Z8c3q
-  //--------------------------
-//  for (const auto& company: database.companies) {
-//    auto it = find_if(company.names.begin(), company.names.end(), [](const Descriptions::Name& comp){return comp.value == "lcvQmn7MpJH3sA 7Z8c3q";});
-//    if (it != company.names.end()) {
-//      cerr << "Suspiciout company found:" << endl;
-//      cerr << company << endl;
-//      throw;
-//    }
-//  }
-  //--------------------------
   auto stops_end = partition(begin(data), end(data), [](const auto& item) {
     return holds_alternative<Descriptions::Stop>(item);
   });
@@ -42,6 +28,19 @@ TransportCatalog::TransportCatalog(
     stops_dict[stop.name] = &stop;
     stops_.insert({stop.name, {}});
   }
+
+  // create companies stops
+  companies_stops_.reserve(database.companies.size());
+  for (const auto& company: database.companies)
+    companies_stops_.push_back(Descriptions::Stop::ParseFrom(company));
+
+  // insert companies stops
+  for (const auto& stop: companies_stops_) {
+    stops_.insert({stop.name, {}});
+    stops_dict[stop.name] = &stop;
+  }
+  // do I need to insert stops to stops_ ??
+  //
 
   Descriptions::BusesDict buses_dict;
   for (const auto& item : Range{stops_end, end(data)}) {
@@ -171,6 +170,9 @@ TransportCatalog TransportCatalog::Deserialize(const string& data) {
   catalog.map_renderer_ = MapRenderer::Deserialize(proto.renderer());
   catalog.map_ = catalog.map_renderer_->Render();
   catalog.database = Descriptions::Database::Deserialize(proto.yp_db());
+  catalog.companies_stops_.reserve(catalog.database.companies.size());
+  for (const auto& company: catalog.database.companies)
+      catalog.companies_stops_.push_back(Descriptions::Stop::ParseFrom(company));
   catalog.mapToRubric = MakeRubricMap(catalog.database);
 
   return catalog;

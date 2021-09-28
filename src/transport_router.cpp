@@ -22,26 +22,53 @@ TransportRouter::RoutingSettings TransportRouter::MakeRoutingSettings(const Json
   return {
       json.at("bus_wait_time").AsInt(),
       json.at("bus_velocity").AsDouble(),
+      json.at("pedestrian_velocity").AsDouble()
   };
 }
 
 void TransportRouter::FillGraphWithStops(const Descriptions::StopsDict& stops_dict) {
   Graph::VertexId vertex_id = 0;
 
-  for (const auto& [stop_name, _] : stops_dict) {
+  for (const auto& [stop_name, stop_ptr] : stops_dict) {
     auto& vertex_ids = stops_vertex_ids_[stop_name];
     vertex_ids.in = vertex_id++;
     vertex_ids.out = vertex_id++;
     vertices_info_[vertex_ids.in] = {stop_name};
     vertices_info_[vertex_ids.out] = {stop_name};
+    if (stop_ptr->is_company_stop) {
+      edges_info_.push_back(BlankEdgeInfo{});
+      const Graph::EdgeId edge_id = graph_.AddEdge({
+          vertex_ids.out,
+          vertex_ids.in,
+          0.0
+      });
+      assert(edge_id == edges_info_.size() - 1);
+    } else {
+      edges_info_.push_back(WaitEdgeInfo{});
+      const Graph::EdgeId edge_id = graph_.AddEdge({
+          vertex_ids.out,
+          vertex_ids.in,
+          static_cast<double>(routing_settings_.bus_wait_time)
+      });
+      assert(edge_id == edges_info_.size() - 1);
+    }
+  }
 
-    edges_info_.push_back(WaitEdgeInfo{});
-    const Graph::EdgeId edge_id = graph_.AddEdge({
-        vertex_ids.out,
-        vertex_ids.in,
-        static_cast<double>(routing_settings_.bus_wait_time)
-    });
-    assert(edge_id == edges_info_.size() - 1);
+  // connect company stops with nearby stops
+  for (const auto& [stop_name, stop_ptr]: stops_dict) {
+    if (stop_ptr->is_company_stop) {
+      const auto& vertex_ids = stops_vertex_ids_.at(stop_name);
+      for (const auto& [other_stop, dist]: stop_ptr->distances) {
+        edges_info_.push_back(WalkEdgeInfo{});
+        const auto& other_stop_vertex_ids = stops_vertex_ids_.at(other_stop);
+        const Graph::EdgeId edge_id = graph_.AddEdge({
+          other_stop_vertex_ids.out,
+          vertex_ids.out,
+          dist*1.0/(routing_settings_.pedestrian_velocity*1000.0/60)
+        });
+        assert(edge_id == edges_info_.size() - 1);
+      }
+    }
   }
 
   assert(vertex_id == graph_.GetVertexCount());
@@ -79,10 +106,13 @@ void TransportRouter::FillGraphWithBuses(const Descriptions::StopsDict& stops_di
   }
 }
 
+// TODO: make serialize and deserialize for Walk Edges;
+
 void TransportRouter::Serialize(TCProto::TransportRouter& proto) const {
   auto& routing_settings_proto = *proto.mutable_routing_settings();
   routing_settings_proto.set_bus_wait_time(routing_settings_.bus_wait_time);
   routing_settings_proto.set_bus_velocity(routing_settings_.bus_velocity);
+  routing_settings_proto.set_pedestrian_velocity(routing_settings_.pedestrian_velocity);
 
   graph_.Serialize(*proto.mutable_graph());
   router_->Serialize(*proto.mutable_router());
@@ -106,8 +136,12 @@ void TransportRouter::Serialize(TCProto::TransportRouter& proto) const {
       bus_edge_info_proto.set_bus_name(bus_edge_info.bus_name);
       bus_edge_info_proto.set_start_stop_idx(bus_edge_info.start_stop_idx);
       bus_edge_info_proto.set_finish_stop_idx(bus_edge_info.finish_stop_idx);
-    } else {
+    } else if (holds_alternative<WaitEdgeInfo>(edge_info)) {
       edge_info_proto.mutable_wait_data();
+    } else if (holds_alternative<WalkEdgeInfo>(edge_info)) {
+      edge_info_proto.mutable_walk_data();
+    } else {
+      edge_info_proto.mutable_blank_data();
     }
   }
 }
@@ -119,6 +153,7 @@ unique_ptr<TransportRouter> TransportRouter::Deserialize(const TCProto::Transpor
   auto& routing_settings = router.routing_settings_;
   routing_settings.bus_wait_time = proto.routing_settings().bus_wait_time();
   routing_settings.bus_velocity = proto.routing_settings().bus_velocity();
+  routing_settings.pedestrian_velocity = proto.routing_settings().pedestrian_velocity();
 
   router.graph_ = BusGraph::Deserialize(proto.graph());
   router.router_ = Router::Deserialize(proto.router(), router.graph_);
@@ -145,8 +180,12 @@ unique_ptr<TransportRouter> TransportRouter::Deserialize(const TCProto::Transpor
           bus_info_proto.start_stop_idx(),
           bus_info_proto.finish_stop_idx(),
       };
-    } else {
+    } else if (edge_info_proto.has_wait_data()){
       edge_info = WaitEdgeInfo{};
+    } else if (edge_info_proto.has_walk_data()) {
+      edge_info = WalkEdgeInfo{};
+    } else {
+      edge_info = BlankEdgeInfo{};
     }
   }
 
@@ -176,11 +215,19 @@ optional<TransportRouter::RouteInfo> TransportRouter::FindRoute(const string& st
           .finish_stop_idx = bus_edge_info.finish_stop_idx,
           .span_count = bus_edge_info.finish_stop_idx - bus_edge_info.start_stop_idx,
       });
-    } else {
+    } else if (holds_alternative<WaitEdgeInfo>(edge_info)){
       const Graph::VertexId vertex_id = edge.from;
       route_info.items.push_back(RouteInfo::WaitItem{
           .stop_name = vertices_info_[vertex_id].stop_name,
           .time = edge.weight,
+      });
+    } else {
+      const Graph::VertexId vertex_from = edge.from;
+      const Graph::VertexId vertex_to = edge.to;
+      route_info.items.push_back(RouteInfo::WalkItem{
+        .stop_from = vertices_info_[vertex_from].stop_name,
+        .company_name = vertices_info_[vertex_to].stop_name,
+        .time = edge.weight
       });
     }
   }

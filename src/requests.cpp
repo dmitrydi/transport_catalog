@@ -55,6 +55,14 @@ namespace Requests {
           {"time", Json::Node(wait_item.time)},
       };
     }
+    Json::Dict operator()(const TransportRouter::RouteInfo::WalkItem& walk_item) const {
+      return Json::Dict{
+        {"type", Json::Node("Walk"s)},
+        {"stop_from", Json::Node(walk_item.stop_from)},
+        {"to_company", Json::Node(walk_item.company_name)},
+        {"time", Json::Node(walk_item.time)}
+      };
+    }
   };
 
   Json::Dict Route::Process(const TransportCatalog& db) const {
@@ -94,7 +102,35 @@ namespace Requests {
     return dict;
   }
 
-  variant<Stop, Bus, Route, Map, Companies> Read(const Json::Dict& attrs) {
+  Json::Dict RouteToCompany::Process(const TransportCatalog& db) const {
+    Json::Dict dict;
+    map<double, TransportRouter::RouteInfo> responses;
+    vector<string> companies;
+    const auto search_result = db.FindCompanies(companies_filter);
+    for (auto& company_name: search_result) {
+      auto route = db.FindRoute(stop_from, company_name);
+      if (route)
+        responses[route->total_time] = *move(route);
+    }
+    if (responses.empty()) {
+      dict["error_message"] = Json::Node("not found"s);
+    } else {
+      const auto& best_result = prev(responses.end())->second;
+      dict["total_time"] = best_result.total_time;
+      Json::Array items;
+      items.reserve(best_result.items.size());
+      for (const auto& item : best_result.items) {
+        items.push_back(visit(RouteItemResponseBuilder{}, item));
+      }
+
+      dict["items"] = move(items);
+
+      dict["map"] = Json::Node("map"s);
+    }
+    return dict;
+  }
+
+  variant<Stop, Bus, Route, Map, Companies, RouteToCompany> Read(const Json::Dict& attrs) {
     const string& type = attrs.at("type").AsString();
     if (type == "Bus") {
       return Bus{attrs.at("name").AsString()};
@@ -104,8 +140,10 @@ namespace Requests {
       return Route{attrs.at("from").AsString(), attrs.at("to").AsString()};
     } else if (type == "Map") {
       return Map{};
-    } else {
+    } else if (type == "FindCompanies"){
       return Companies{Filters::Filter::ParseFrom(attrs)};
+    } else {
+      return RouteToCompany{attrs.at("from").AsString(), Filters::Filter::ParseFrom(attrs.at("filter").AsMap())};
     }
   }
 

@@ -1,0 +1,23 @@
+{
+    "serialization_settings": {
+        "file": "../tmp/tmptxbmhtnl"
+    },
+    "stat_requests": [
+        {
+            "id": 100500,
+            "type": "RouteToCompany",
+            "from": "Морской вокзал",
+            "filter": {
+                "rubrics": [
+                    "Парк"
+                ]
+            }
+        },
+        {
+            "id": 200500,
+            "type": "Route",
+            "from": "Морской вокзал",
+            "to": "Пансионат Светлана"
+        }
+    ]
+}

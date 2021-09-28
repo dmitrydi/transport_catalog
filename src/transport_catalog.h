@@ -80,5 +80,6 @@ private:
   std::unordered_map<std::string, Bus> buses_;
   std::unique_ptr<TransportRouter> router_;
   std::unique_ptr<MapRenderer> map_renderer_;
+  std::vector<Descriptions::Stop> companies_stops_;
   Svg::Document map_;
 };

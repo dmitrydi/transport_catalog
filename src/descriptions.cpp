@@ -20,6 +20,16 @@ namespace Descriptions {
     return stop;
   }
 
+  Stop Stop::ParseFrom(const Company& company) {
+    Stop stop;
+    stop.name = company.GetMainName();
+    stop.position = *(company.address->coords);
+    for (const auto& ns: company.nearby_stops)
+      stop.distances[ns.name] = ns.meters;
+    stop.is_company_stop = true;
+    return stop;
+  }
+
   static vector<string> ParseStops(const Json::Array& stop_nodes, bool is_roundtrip) {
     vector<string> stops;
     stops.reserve(stop_nodes.size());
@@ -152,10 +162,16 @@ namespace Descriptions {
     }
 
     if (attrs.count("coords")) {
-      addr.coords = {
-          stod(attrs.at("coords").AsMap().at("lat").AsString()),
-          stod(attrs.at("coords").AsMap().at("lon").AsString())
-      };
+      Sphere::Point crd;
+      if (attrs.at("coords").AsMap().at("lat").IsString())
+        crd.latitude = stod(attrs.at("coords").AsMap().at("lat").AsString());
+      else
+        crd.latitude = attrs.at("coords").AsMap().at("lat").AsDouble();
+      if (attrs.at("coords").AsMap().at("lon").IsString())
+        crd.longitude = stod(attrs.at("coords").AsMap().at("lon").AsString());
+      else
+        crd.longitude = attrs.at("coords").AsMap().at("lon").AsDouble();
+      addr.coords = move(crd);
     }
 
     if (attrs.count("comment"))
@@ -615,6 +631,132 @@ namespace Descriptions {
       if (other.working_time) return false;
     }
     return nearby_stops == other.nearby_stops;
+  }
+
+  void Company::ToOstreamShort(std::ostream& os) const {
+    os << names.size() << ",";
+    for (const auto& n: names) {
+      if (n.type == Name::Type::MAIN)
+        os<< "M" << ",";
+      else if (n.type == Name::Type::SYNONYM)
+        os << "S" << ",";
+      else
+        os << "s" << ",";
+      os << n.value << ",";
+    }
+    os << phones.size() << ",";
+    for (const auto& p: phones) {
+      if (p.type) {
+        if(*p.type == Phone::Type::PHONE) {
+          os << "P" << ",";
+        }
+        else if(*p.type == Phone::Type::FAX) {
+          os << "F" << ",";
+        }
+      } else {
+        os << "_" << ",";
+      }
+      os << p.country_code << ",";
+      os << p.local_code << ",";
+      os << p.number << ",";
+      os << p.extension << ",";
+    }
+    os << urls.size() << ",";
+    for (const auto& url: urls)
+      os << url.value << ",";
+    os << rubrics.size() << ",";
+    bool first = true;
+    for (const auto r: rubrics) {
+      if (!first)
+        os << ",";
+      first = false;
+      os << r;
+    }
+    os << ";";
+  }
+  Company Company::FromIstreamShort(std::istream& iss) {
+    /*
+     *     std::optional<Address> address;
+    std::vector<Name> names;
+    std::vector<Phone> phones;
+    std::vector<Url> urls;
+    std::vector<uint64_t> rubrics;
+    std::optional<WorkingTime> working_time;
+    std::vector<NearbyStop> nearby_stops;
+     */
+    /*
+     *     std::optional<Type> type;
+  std::string country_code;
+  std::string local_code;
+  std::string number;
+  std::string extension;
+  std::string description;
+     */
+    const char del = ',';
+    Company cp;
+    string dum;
+    int cnt;
+    getline(iss, dum, del);
+    cnt = stoi(dum);
+    cp.names.reserve(cnt);
+
+    for (int i = 0; i < cnt; ++i) {
+      Name name;
+      getline(iss, dum, del);
+      if (dum == "M")
+        name.type = Name::Type::MAIN;
+      else if (dum == "s")
+        name.type = Name::Type::SHORT;
+      else if (dum == "S")
+        name.type = Name::Type::SYNONYM;
+      else
+        throw;
+      getline(iss, dum, del);
+      name.value = dum;
+      cp.names.push_back(move(name));
+    }
+
+    getline(iss, dum, del);
+    cnt = stoi(dum);
+    cp.phones.reserve(cnt);
+    for (int i = 0; i < cnt; ++i) {
+      Phone phone;
+      getline(iss,dum,del);
+      if (dum != "_") {
+        if (dum == "P")
+          phone.type = Phone::Type::PHONE;
+        else if (dum == "F")
+          phone.type = Phone::Type::FAX;
+        else
+          throw;
+      }
+      getline(iss, phone.country_code, del);
+      getline(iss, phone.local_code, del);
+      getline(iss, phone.number, del);
+      getline(iss, phone.extension, del);
+      cp.phones.push_back(move(phone));
+    }
+
+    getline(iss, dum, del);
+    cnt = stoi(dum);
+    cp.urls.reserve(cnt);
+    for (int i = 0; i < cnt; ++i) {
+      getline(iss, dum, del);
+      cp.urls.push_back({dum});
+    }
+
+    getline(iss, dum, del);
+    cnt = stoi(dum);
+    cp.rubrics.reserve(cnt);
+    for (int i = 0; i < cnt; ++i) {
+      if (i < cnt - 1)
+        getline(iss, dum, del);
+      else
+        getline(iss, dum, ';');
+      cp.rubrics.push_back(stoi(dum));
+    }
+
+    return cp;
   }
   // ~Company
 

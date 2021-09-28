@@ -18,12 +18,16 @@
 
 
 namespace Descriptions {
+  struct Company;
+
   struct Stop {
     std::string name;
     Sphere::Point position;
     std::unordered_map<std::string, size_t> distances;
+    bool is_company_stop = false;
 
     static Stop ParseFrom(const Json::Dict& attrs);
+    static Stop ParseFrom(const Company& company);
   };
 
   size_t ComputeStopsDistance(const Stop& lhs, const Stop& rhs);
@@ -202,6 +206,10 @@ namespace Descriptions {
     std::string GetMainName() const;
 
     bool operator==(const Company& other) const;
+
+    void ToOstreamShort(std::ostream& os) const;
+    static Company FromIstreamShort(std::istream& iss);
+
   };
 
   struct Rubric {
@@ -266,19 +274,4 @@ namespace Descriptions {
   std::ostream& operator<<(std::ostream& os, const Descriptions::Database& db);
 }
 
-
-//std::ostream& operator << (std::ostream& os, const Descriptions::Name::Type& type);
-//std::ostream& operator << (std::ostream& os, const Descriptions::Phone::Type& type);
-//
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Phone& phone);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Address& addr);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Name& name);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Url& url);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::WorkingTime& wt);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::NearbyStop& ns);
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Rubric& rubric);
-//
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Company& company);
-//
-//std::ostream& operator<<(std::ostream& os, const Descriptions::Database& db);
 

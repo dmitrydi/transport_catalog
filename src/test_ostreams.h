@@ -8,3 +8,4 @@
 void TestPhoneToOstream();
 void TestCompanyToOstream();
 void TestDatabaseToOstream();
+void TestCompanyToShort();
