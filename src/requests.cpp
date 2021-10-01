@@ -125,7 +125,7 @@ namespace Requests {
 
       dict["items"] = move(items);
 
-      dict["map"] = Json::Node("map"s);
+      dict["map"] = Json::Node(db.RenderRoute(best_result));
     }
     return dict;
   }

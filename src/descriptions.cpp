@@ -81,6 +81,7 @@ namespace Descriptions {
     for (const string& stop : endpoints) {
       proto.add_endpoints(stop);
     }
+    proto.set_is_virtual(is_virtual);
   }
 
   Bus Bus::Deserialize(const TCProto::BusDescription& proto) {
@@ -96,7 +97,7 @@ namespace Descriptions {
     for (const auto& stop : proto.endpoints()) {
       bus.endpoints.push_back(stop);
     }
-
+    bus.is_virtual = proto.is_virtual();
     return bus;
   }
 

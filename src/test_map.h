@@ -5,3 +5,7 @@
 #include "test_runner.h"
 
 void PrintOutputMap();
+
+void PrintRouteMap();
+
+void PrintRouteToCompany();

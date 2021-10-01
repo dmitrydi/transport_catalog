@@ -6,4 +6,5 @@ message BusDescription {
   string name = 1;
   repeated string stops = 2;
   repeated string endpoints = 3;
+  bool is_virtual = 4;
 }

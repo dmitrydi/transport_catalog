@@ -7,10 +7,11 @@ namespace Svg {
   void SerializePoint(Point point, SvgProto::Point& proto) {
     proto.set_x(point.x);
     proto.set_y(point.y);
+    proto.set_flag(point.flag);
   }
 
   Point DeserializePoint(const SvgProto::Point& proto) {
-    return {proto.x(), proto.y()};
+    return {proto.x(), proto.y(), proto.flag()};
   }
 
   void SerializeColor(const Color& color, SvgProto::Color& proto) {

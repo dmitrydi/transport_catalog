@@ -21,4 +21,5 @@ message Color {
 message Point {
   double x = 1;
   double y = 2;
+  bool flag = 3;
 }

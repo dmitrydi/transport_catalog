@@ -42,7 +42,26 @@
             "bus_lines",
             "bus_labels",
             "stop_points",
-            "stop_labels"
+            "stop_labels",
+            "company_line",
+            "company_point",
+            "company_label"
+        ],
+        "company_label_font_size": 13,
+        "company_label_offset": [
+            7,
+            -3
+        ],
+        "company_line_width": 2,
+        "company_stop_color": [
+            0,
+            0,
+            0
+        ],
+        "company_line_color": [
+            0,
+            0,
+            0
         ]
     },
     "base_requests": [
@@ -122,15 +141,6 @@
             ],
             "is_roundtrip": false
         },
-        {
-            "type": "Bus",
-            "name": "100500",
-            "stops": [
-                "Им. Фрунзе",
-                "Театральная"
-            ],
-            "is_roundtrip": false
-        }
         {
             "type": "Stop",
             "name": "Краево-Греческая улица",
@@ -353,17 +363,6 @@
         },
         {
             "type": "Stop",
-            "name": "Им. Фрунзе",
-            "latitude": 43.567998,
-            "longitude": 39.731954
-            "road_distances": {
-                "Цирк": 700,
-                "Театральная": 1000
-            }
-
-        },
-        {
-            "type": "Stop",
             "name": "Дендрарий",
             "latitude": 43.573226,
             "longitude": 39.742947,
@@ -504,8 +503,8 @@
                 ],
                 "address": {
                     "coords": {
-                        "lat": 43.573226,
-                        "lon": 39.742947
+                        "lat": "43.573226",
+                        "lon": "39.742947"
                     }
                 },
                 "nearby_stops": [
@@ -540,8 +539,8 @@
                 ],
                 "address": {
                     "coords": {
-                        "lat": 43.567998,
-                        "lon": 39.734131
+                        "lat": "43.567998",
+                        "lon": "39.734131"
                     }
                 },
                 "nearby_stops": [

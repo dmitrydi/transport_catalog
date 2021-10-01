@@ -77,30 +77,32 @@ void TransportRouter::FillGraphWithStops(const Descriptions::StopsDict& stops_di
 void TransportRouter::FillGraphWithBuses(const Descriptions::StopsDict& stops_dict,
                                          const Descriptions::BusesDict& buses_dict) {
   for (const auto& [_, bus_item] : buses_dict) {
-    const auto& bus = *bus_item;
-    const size_t stop_count = bus.stops.size();
-    if (stop_count <= 1) {
-      continue;
-    }
-    auto compute_distance_from = [&stops_dict, &bus](size_t lhs_idx) {
-      return Descriptions::ComputeStopsDistance(*stops_dict.at(bus.stops[lhs_idx]), *stops_dict.at(bus.stops[lhs_idx + 1]));
-    };
-    for (size_t start_stop_idx = 0; start_stop_idx + 1 < stop_count; ++start_stop_idx) {
-      const Graph::VertexId start_vertex = stops_vertex_ids_[bus.stops[start_stop_idx]].in;
-      int total_distance = 0;
-      for (size_t finish_stop_idx = start_stop_idx + 1; finish_stop_idx < stop_count; ++finish_stop_idx) {
-        total_distance += compute_distance_from(finish_stop_idx - 1);
-        edges_info_.push_back(BusEdgeInfo{
-            .bus_name = bus.name,
-            .start_stop_idx = start_stop_idx,
-            .finish_stop_idx = finish_stop_idx,
-        });
-        const Graph::EdgeId edge_id = graph_.AddEdge({
-            start_vertex,
-            stops_vertex_ids_[bus.stops[finish_stop_idx]].out,
-            total_distance * 1.0 / (routing_settings_.bus_velocity * 1000.0 / 60)  // m / (km/h * 1000 / 60) = min
-        });
-        assert(edge_id == edges_info_.size() - 1);
+    if (!bus_item->is_virtual) {
+      const auto& bus = *bus_item;
+      const size_t stop_count = bus.stops.size();
+      if (stop_count <= 1) {
+        continue;
+      }
+      auto compute_distance_from = [&stops_dict, &bus](size_t lhs_idx) {
+        return Descriptions::ComputeStopsDistance(*stops_dict.at(bus.stops[lhs_idx]), *stops_dict.at(bus.stops[lhs_idx + 1]));
+      };
+      for (size_t start_stop_idx = 0; start_stop_idx + 1 < stop_count; ++start_stop_idx) {
+        const Graph::VertexId start_vertex = stops_vertex_ids_[bus.stops[start_stop_idx]].in;
+        int total_distance = 0;
+        for (size_t finish_stop_idx = start_stop_idx + 1; finish_stop_idx < stop_count; ++finish_stop_idx) {
+          total_distance += compute_distance_from(finish_stop_idx - 1);
+          edges_info_.push_back(BusEdgeInfo{
+              .bus_name = bus.name,
+              .start_stop_idx = start_stop_idx,
+              .finish_stop_idx = finish_stop_idx,
+          });
+          const Graph::EdgeId edge_id = graph_.AddEdge({
+              start_vertex,
+              stops_vertex_ids_[bus.stops[finish_stop_idx]].out,
+              total_distance * 1.0 / (routing_settings_.bus_velocity * 1000.0 / 60)  // m / (km/h * 1000 / 60) = min
+          });
+          assert(edge_id == edges_info_.size() - 1);
+        }
       }
     }
   }

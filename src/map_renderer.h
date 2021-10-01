@@ -28,6 +28,12 @@ struct RenderSettings {
   Svg::Point stop_label_offset;
   int stop_label_font_size;
   std::vector<std::string> layers;
+  //-----company features
+  int company_label_font_size;
+  Svg::Point company_label_offset;
+  int company_line_width;
+  Svg::Color company_stop_color;
+  Svg::Color company_line_color;
 
   void Serialize(TCProto::RenderSettings& proto) const;
   static RenderSettings Deserialize(const TCProto::RenderSettings& proto);
@@ -67,6 +73,13 @@ private:
   void RenderRouteBusLabels(Svg::Document& svg, const TransportRouter::RouteInfo& route) const;
   void RenderRouteStopPoints(Svg::Document& svg, const TransportRouter::RouteInfo& route) const;
   void RenderRouteStopLabels(Svg::Document& svg, const TransportRouter::RouteInfo& route) const;
+
+  void RenderRouteCompanyLine(Svg::Document& svg, const TransportRouter::RouteInfo& route) const;
+  void RenderRouteCompanyStopPoint(Svg::Document& svg, const TransportRouter::RouteInfo& route) const;
+  void RenderRouteCompanyStopLabel(Svg::Document& svg, const TransportRouter::RouteInfo& route) const;
+
+  void VoidAction(Svg::Document&) const;
+  void VoidAction(Svg::Document& svg, const TransportRouter::RouteInfo& route) const;
 
   static const std::unordered_map<
       std::string,

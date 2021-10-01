@@ -36,6 +36,7 @@ namespace Descriptions {
     std::string name;
     std::vector<std::string> stops;
     std::vector<std::string> endpoints;
+    bool is_virtual = false;
 
     static Bus ParseFrom(const Json::Dict& attrs);
 

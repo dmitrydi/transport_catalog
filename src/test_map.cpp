@@ -30,3 +30,58 @@ void PrintOutputMap() {
     cerr << "Error uotput";
   fout << result.at("map").AsString();
 }
+
+void PrintRouteMap() {
+  const string path = "../test_inputs/part_t_make_base.txt";
+
+  istringstream iss(ReadFileData(path));
+
+  const auto input_doc = Json::Load(iss);
+  const auto& input_map = input_doc.GetRoot().AsMap();
+
+  const TransportCatalog db(
+          Descriptions::ReadDescriptions(input_map.at("base_requests").AsArray()),
+          input_map.at("routing_settings").AsMap(),
+          input_map.at("render_settings").AsMap(),
+          Descriptions::ReadDatabase(input_map.at("yellow_pages").AsMap())
+      );
+
+  Requests::Route route{"Санаторий Салют", "Улица Лизы Чайкиной"};
+
+  auto result = route.Process(db);
+
+  const string path_out = "../test_out/map2.svg";
+
+  ofstream fout(path_out);
+  if (!fout)
+    cerr << "Error uotput";
+  fout << result.at("map").AsString();
+}
+
+void PrintRouteToCompany() {
+  const string path = "../test_inputs/part_t_make_base.txt";
+
+  istringstream iss(ReadFileData(path));
+
+  const auto input_doc = Json::Load(iss);
+  const auto& input_map = input_doc.GetRoot().AsMap();
+
+  const TransportCatalog db(
+          Descriptions::ReadDescriptions(input_map.at("base_requests").AsArray()),
+          input_map.at("routing_settings").AsMap(),
+          input_map.at("render_settings").AsMap(),
+          Descriptions::ReadDatabase(input_map.at("yellow_pages").AsMap())
+      );
+  Requests::RouteToCompany rtc;
+  rtc.stop_from = "Санаторий Салют";
+  rtc.companies_filter = Filters::Filter{.urls={"http://dendrarium.ru"}};
+
+  auto result = rtc.Process(db);
+
+  const string path_out = "../test_out/map3.svg";
+
+  ofstream fout(path_out);
+  if (!fout)
+    cerr << "Error uotput";
+  fout << result.at("map").AsString();
+}

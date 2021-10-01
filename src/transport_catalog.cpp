@@ -42,6 +42,7 @@ TransportCatalog::TransportCatalog(
   // do I need to insert stops to stops_ ??
   //
 
+
   Descriptions::BusesDict buses_dict;
   for (const auto& item : Range{stops_end, end(data)}) {
     const auto& bus = get<Descriptions::Bus>(item);
@@ -57,6 +58,26 @@ TransportCatalog::TransportCatalog(
     for (const string& stop_name : bus.stops) {
       stops_.at(stop_name).bus_names.insert(bus.name);
     }
+  }
+
+  //------- add new virtual buses
+  vector<Descriptions::Bus> virtual_buses;
+  for (const auto& company: database.companies) {
+    Descriptions::Stop cstop = Descriptions::Stop::ParseFrom(company);
+    for (const auto& [stop_from, _]: cstop.distances) {
+      Descriptions::Bus dum_b;
+      dum_b.name = stop_from+cstop.name;
+      dum_b.stops.push_back(stop_from);
+      dum_b.stops.push_back(cstop.name);
+      dum_b.endpoints.push_back(stop_from);
+      dum_b.endpoints.push_back(cstop.name);
+      dum_b.is_virtual = true;
+      virtual_buses.push_back(move(dum_b));
+    }
+  }
+
+  for (const auto& b: virtual_buses) {
+    buses_dict[b.name] = &b;
   }
 
   router_ = make_unique<TransportRouter>(stops_dict, buses_dict, routing_settings_json);
