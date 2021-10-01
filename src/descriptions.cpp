@@ -24,6 +24,7 @@ namespace Descriptions {
     Stop stop;
     stop.name = company.GetMainName();
     stop.position = *(company.address->coords);
+    stop.position.flag = true;
     for (const auto& ns: company.nearby_stops)
       stop.distances[ns.name] = ns.meters;
     stop.is_company_stop = true;

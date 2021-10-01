@@ -106,12 +106,13 @@ static unordered_map<string, Sphere::Point> ComputeInterpolatedStopsGeoCoords(
 ) {
   const unordered_set<string> support_stops = FindSupportStops(buses_dict);
 
-  unordered_map<string, Sphere::Point> stops_coords;
+    unordered_map<string, Sphere::Point> stops_coords;
   for (const auto& [stop_name, stop_ptr] : stops_dict) {
+    if (!stop_ptr->is_company_stop)
     stops_coords[stop_name] = stop_ptr->position;
   }
 
-  for (const auto& [_, bus_ptr] : buses_dict) {
+  for (const auto& [_, bus_ptr] : buses_dict) { // buses do not contain any company stops
     const auto& stops = bus_ptr->stops;
     if (stops.empty()) {
       continue;
@@ -279,6 +280,9 @@ private:
 static map<string, Svg::Point> ComputeStopsCoordsByGrid(const Descriptions::StopsDict& stops_dict,
                                                         const Descriptions::BusesDict& buses_dict,
                                                         const RenderSettings& render_settings) {
+  // take only non-companies stops here
+  //Descriptions::StopsDict stops_dict;
+  //for (const auto&)
   const auto stops_coords = ComputeInterpolatedStopsGeoCoords(stops_dict, buses_dict);
 
   const auto [neighbour_lats, neighbour_lons] = BuildCoordNeighboursDicts(stops_coords, buses_dict);
@@ -514,10 +518,11 @@ void MapRenderer::RenderRouteBusLabels(Svg::Document& svg, const TransportRouter
 }
 
 void MapRenderer::RenderStopPoint(Svg::Document& svg, Svg::Point point) const {
-  svg.Add(Svg::Circle{}
-          .SetCenter(point)
-          .SetRadius(render_settings_.stop_radius)
-          .SetFillColor("white"));
+  if (!point.flag)
+    svg.Add(Svg::Circle{}
+            .SetCenter(point)
+            .SetRadius(render_settings_.stop_radius)
+            .SetFillColor("white"));
 }
 
 void MapRenderer::RenderStopPoints(Svg::Document& svg) const {

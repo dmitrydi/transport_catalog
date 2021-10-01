@@ -12,7 +12,8 @@
 using namespace std;
 
 int main(int argc, const char* argv[]) {
-  //TestAll();
+  TestAll();
+  return 0;
   if (argc != 2) {
     cerr << "Usage: transport_catalog_part_q [make_base|process_requests]\n";
     return 5;

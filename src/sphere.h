@@ -11,6 +11,7 @@ namespace Sphere {
   struct Point {
     double latitude;
     double longitude;
+    bool flag = false;
 
     static Point FromDegrees(double latitude, double longitude);
 

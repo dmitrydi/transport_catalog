@@ -28,5 +28,7 @@ test_ostreams.h
 test_ostreams.cpp
 test_main.h
 test_main.cpp
+test_map.h
+test_map.cpp
 ${PROTO_SRCS} ${PROTO_HDRS}) # Здесь надо перечислить все ваши .cpp-файлы, в том числе и сгенерированные protoc'ом
 target_link_libraries(main ${Protobuf_LIBRARIES}) # компонуем наш исполняемый файл с библиотекой libprotobuf 

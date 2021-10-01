@@ -16,5 +16,6 @@
 #include "test_data_generator.h"
 #include "test_ostreams.h"
 #include "test_main.h"
+#include "test_map.h"
 
 void TestAll();
