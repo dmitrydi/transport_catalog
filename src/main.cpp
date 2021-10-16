@@ -13,13 +13,17 @@ using namespace std;
 
 int main(int argc, const char* argv[]) {
 
-  return 0;
   if (argc != 2) {
     cerr << "Usage: transport_catalog_part_r [make_base|process_requests|run_tests]\n";
     return 5;
   }
 
   const string_view mode(argv[1]);
+
+  if (mode == "run_tests") {
+    TestAll();
+    return 0;
+  }
 
   const auto input_doc = Json::Load(cin);
   const auto& input_map = input_doc.GetRoot().AsMap();
@@ -48,10 +52,8 @@ int main(int argc, const char* argv[]) {
     ofstream file(file_name, ios::binary);
     file << db.Serialize();
 
-  } else if (mode == "run_tests") {
-
-    TestAll();
-
+  } else {
+    cout << "Unnown mode" << endl;
   }
 
   return 0;
