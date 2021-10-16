@@ -9,3 +9,5 @@ void PrintOutputMap();
 void PrintRouteMap();
 
 void PrintRouteToCompany();
+
+void PrintFromSaved();

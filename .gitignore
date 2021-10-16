@@ -1,3 +1,5 @@
 build/*
 tmp/*
 !tmp/.dummy
+*.html
+src/*.zip

@@ -12,10 +12,10 @@
 using namespace std;
 
 int main(int argc, const char* argv[]) {
-  TestAll();
+
   return 0;
   if (argc != 2) {
-    cerr << "Usage: transport_catalog_part_q [make_base|process_requests]\n";
+    cerr << "Usage: transport_catalog_part_r [make_base|process_requests|run_tests]\n";
     return 5;
   }
 
@@ -47,6 +47,10 @@ int main(int argc, const char* argv[]) {
     const string& file_name = input_map.at("serialization_settings").AsMap().at("file").AsString();
     ofstream file(file_name, ios::binary);
     file << db.Serialize();
+
+  } else if (mode == "run_tests") {
+
+    TestAll();
 
   }
 
