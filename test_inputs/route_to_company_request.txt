@@ -1,0 +1,25 @@
+{
+    "serialization_settings": {
+        "file": "../tmp/tmptxbmhtnl"
+    },
+    "stat_requests": [
+        {
+            "id": 2053647165,
+            "type": "RouteToCompany",
+            "from": "Улица Лысая Гора",
+            "filter" : {
+                "rubrics": [
+                    "Парк"
+                ],
+                "phones": [
+                    {
+                        "type": "PHONE",
+                        "country_code": "7",
+                        "local_code": "862",
+                        "number": "2671646"
+                    }
+                ]
+            }
+        }
+    ]
+}

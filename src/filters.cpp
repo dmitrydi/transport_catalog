@@ -29,18 +29,9 @@ namespace Filters {
   }
 
   Filter Filter::ParseFrom(const Json::Dict& input) {
-    /*
-    Names names;
-    Urls urls;
-    Rubrics rubrics;
-    Phones phones;
-     */
+
     Filter result;
-//    cerr << "-----Request nodes:" << endl;
-//    for (const auto& [k,v]: input) {
-//      cerr << k << endl;
-//    }
-//    cerr << "-----" << endl;
+
     if (input.count("names")) {
       result.names.reserve(input.at("names").AsArray().size());
       for (const auto& name: input.at("names").AsArray())

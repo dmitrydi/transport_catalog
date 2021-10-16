@@ -78,7 +78,7 @@ void PrintRouteToCompany() {
 
   auto result = rtc.Process(db);
 
-  const string path_out = "../test_out/map3.svg";
+  const string path_out = "../test_out/map31.svg";
 
   ofstream fout(path_out);
   if (!fout)

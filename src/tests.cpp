@@ -6,7 +6,7 @@ using namespace std;
 
 void TestAll() {
   TestRunner tr;
-
+/*
   RUN_TEST(tr, Descriptions::TestAddress);
   RUN_TEST(tr, Descriptions::TestName);
   RUN_TEST(tr, Descriptions::TestPhone);
@@ -61,7 +61,8 @@ void TestAll() {
 
   RUN_TEST(tr, PrintOutputMap);
   RUN_TEST(tr, PrintRouteMap);
+  */
   RUN_TEST(tr, PrintRouteToCompany);
-  RUN_TEST(tr, PrintFromSaved);
+  //RUN_TEST(tr, PrintFromSaved);
 }
 
