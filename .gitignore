@@ -2,4 +2,3 @@ tmp/*
 tmp/**
 build/*
 build/**
-test_out/*

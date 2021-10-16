@@ -39,9 +39,6 @@ TransportCatalog::TransportCatalog(
     stops_.insert({stop.name, {}});
     stops_dict[stop.name] = &stop;
   }
-  // do I need to insert stops to stops_ ??
-  //
-
 
   Descriptions::BusesDict buses_dict;
   for (const auto& item : Range{stops_end, end(data)}) {
