@@ -8,8 +8,13 @@
             "type": "RouteToCompany",
             "from": "Санаторий Салют",
             "filter" : {
-                "urls": [
-                    "http://dendrarium.ru"
+                "rubrics": [
+                    "Парк"
+                ],
+                "phones": [
+                    {
+                        "number": "2671646"
+                    }
                 ]
             }
         }

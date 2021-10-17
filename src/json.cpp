@@ -99,7 +99,7 @@ namespace Json {
     output << '"';
     for (const char c : value) {
       if (c == '"' || c == '\\') {
-        //output << '\\';
+        output << '\\';
       }
       output << c;
     }

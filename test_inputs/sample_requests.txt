@@ -1,0 +1,43 @@
+{
+    "serialization_settings": {
+        "file": "../tmp/tmptxbmhtnlvh"
+    },
+    "stat_requests": [
+        {
+	        "id": 1,
+	        "type": "Bus",
+	        "name": "13"
+        },
+        {
+            "id": 2,
+            "type": "Stop",
+            "name": "Морской вокзал"
+        },
+        {
+        	"id": 3,
+            "type": "Map",
+        },
+        {
+        	"id": 4,
+        	"type": "Route",
+        	"from": "Улица Лизы Чайкиной",
+        	"to": "Мацестинская долина"
+        },
+        {
+        	"id": 5,
+        	"type": "RouteToCompany",
+        	"from": "Санаторий Салют",
+            "filter" : {
+                "rubrics": [
+                    "Парк"
+                ],
+                "phones": [
+                    {
+                        "number": "2671646"
+                    }
+                ]
+            }
+        }
+
+    ]
+}
