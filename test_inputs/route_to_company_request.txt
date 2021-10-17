@@ -1,23 +1,15 @@
 {
     "serialization_settings": {
-        "file": "../tmp/tmptxbmhtnl"
+        "file": "../tmp/tmptxbmhtnlvh"
     },
     "stat_requests": [
         {
             "id": 2053647165,
             "type": "RouteToCompany",
-            "from": "Улица Лысая Гора",
+            "from": "Санаторий Салют",
             "filter" : {
-                "rubrics": [
-                    "Парк"
-                ],
-                "phones": [
-                    {
-                        "type": "PHONE",
-                        "country_code": "7",
-                        "local_code": "862",
-                        "number": "2671646"
-                    }
+                "urls": [
+                    "http://dendrarium.ru"
                 ]
             }
         }
